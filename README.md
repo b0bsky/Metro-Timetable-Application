@@ -1,2 +1,10 @@
 # Metro-Timetable-Application
-Allows you to find the correct bus, stop and time for your trip relative to your needs (Using the metro timetable system for reference)
+
+## What is this project
+Our aim in this project is to create a simple and intuitive UI (user interface) in python, to interact with a database to help users to:
+- Find individual bus timetables
+- Plan a trip
+- See where a bus will be at a certain time
+- See when a bus will arrive at a certain stop
+- Find the right bus based on the users destination and/or location
+
