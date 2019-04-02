@@ -6,5 +6,9 @@ Our aim in this project is to create a simple and intuitive UI (user interface) 
 - Plan a trip
 - See where a bus will be at a certain time
 - See when a bus will arrive at a certain stop
-- Find the right bus based on the users destination and/or location
+- Find the right bus based on the users' destination and/or location
+
+## Why we chose to do this project
+We feel like there is a lack of tools to help users efficiently plan their bus trips ahead of time via the metro bus system, and by implementing some of the above features we feel it would improve the system. Currently on the metro website there is no way to:
+- 
 
