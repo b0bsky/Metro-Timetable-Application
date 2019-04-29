@@ -1,1 +1,1 @@
-Since we are dealing with so much data, individually sorting 
+Since we are dealing with so much data, individually sorting it would take forever and be completely impracticle. Hence, this program will be utilised to separate stops where multiple buses stop at them into separate entries. This will streamline the process of entering data into the database, so when the time comes to populate our tables it will be quick and easy.                                     
