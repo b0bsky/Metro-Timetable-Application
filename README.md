@@ -20,8 +20,3 @@ We have a variety of tools at our disposal to effectively create this applicatio
 - StackOverflow ;;;)
 - Metro Website
 We will be using these tools to maximise productivity, as well as splitting up the workload into more managable chunks. We have two people working on this project and our individual projects are as follows:
-
-## Reuben's Side
-TODO
-## Emile's Side
-TODO
