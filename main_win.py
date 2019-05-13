@@ -3,7 +3,7 @@
     Developer: Reuben Maddock
 '''
 
-from tkinter import Tk, Frame, Label, Entry, Listbox
+from tkinter import Tk, Frame, Label, Entry, Listbox, StringVar, END
 
 # Creating main window and setting window options
 root = Tk(className=" Metro Application")
@@ -47,11 +47,31 @@ trip_options_label.grid(row = 3, column = 0, sticky = "nw", padx = 150, pady = 2
 from_label = Label(root, text = "FROM: ", fg = "black", bg = "dodgerblue3", font = ("verdana 12 bold"))
 from_label.place(x = 35, y = 630)
 
-from_query = Entry(root)
-from_query.place(x = 100, y = 630)
+def query_widgets():
+    # Updating the listbox with all options
+    users_search = StringVar()
+    users_search.trace("w", updateList)
 
-from_listbox = Listbox(root)
-from_listbox.place(x = 100, y = 650)
+    from_query = Entry(root, textvariable = users_search)
+    from_query.place(x = 100, y = 630)
+
+    from_query.bind("<Key>", lambda : updateList(users_search))
+
+def updateList(key, users_search):
+
+    from_listbox = Listbox(root)
+    from_listbox.place(x=100, y=650)
+
+    search_term = users_search.get()
+
+    lbox_list = ['Adam', 'Lucy', 'Barry', 'Bob',
+                 'James', 'Frank', 'Susan', 'Amanda', 'Christie']
+    from_listbox.delete(0, END)
+
+    for item in lbox_list:
+        if search_term.lower() in item.lower():
+            from_listbox.insert(END, item)
+
 
 # Main window loop
 root.mainloop()
