@@ -24,8 +24,8 @@ title_text.grid(row = 0, column = 2)
 search_bar_frame = Frame(root, height = "50", width = "499", borderwidth = 2, relief = "groove")
 search_bar_frame.grid(row = 1, column = 0, sticky = "nw")
 
-search_bar_entry = Entry(search_bar_frame)
-search_bar_entry.grid(row = 1, column = 0, sticky = "nw")
+search_bar_entry = Entry(search_bar_frame, width = "82")
+search_bar_entry.grid(row = 1, column = 0, sticky = "w")
 
 # ----- RESULTS BAR ----- #
 
@@ -35,13 +35,16 @@ results_bar_frame.grid(row = 2, column = 0, sticky = "nw")
 
 # ----- QUERY BAR ------- #
 
+# Query class which holds everything in the query frame
 class Query(Frame):
 
+    # Initiation function
     def __init__(self, master = None):
         Frame.__init__(self, master)
 
         self.query_widgets()
 
+    # Function that controls all query widgets
     def query_widgets(self):
 
         # Updating the listbox with all options
@@ -63,11 +66,9 @@ class Query(Frame):
         self.from_query = Entry(root, textvariable = self.users_search)
         self.from_query.place(x = 100, y = 632)
 
-        self.from_query.bind("<Key>", self.updateList)
-        self.from_query.bind("<FocusIn>", self.toggle_visibility)
-        self.from_query.bind("<FocusOut>", self.toggle_visibility)
+        self.from_query.bind("<FocusIn>", self.updateList)
 
-
+    # Dynamically updates the query frames listboxes
     def updateList(self, *args):
 
         search_term = self.users_search.get()
@@ -75,7 +76,6 @@ class Query(Frame):
         self.from_listbox = Listbox(root)
         self.from_listbox.place(x=100, y=652)
         self.from_listbox.pi = self.from_listbox.place_info()
-
         self.from_listbox.config(highlightbackground="red")
 
         test_lbox = ['Adam', 'Lucy', 'Barry', 'Bob', 'James', 'Frank', 'Susan', 'Amanda', 'Christie']
@@ -85,15 +85,10 @@ class Query(Frame):
         for item in test_lbox:
             if search_term.lower() in item.lower():
                 self.from_listbox.insert(END, item)
-
-    def toggle_visibility(self):
-        if self.from_query.visible:
-            self.from_listbox.place_forget()
-        else:
-            self.from_listbox.place(self.from_listbox.pi)
+    def toggle(self):
+        print("clicked")
 
 Query(master = root)
-
 
 # Main window loop
 root.mainloop()
