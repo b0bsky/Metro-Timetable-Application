@@ -35,42 +35,64 @@ results_bar_frame.grid(row = 2, column = 0, sticky = "nw")
 
 # ----- QUERY BAR ------- #
 
-# Query bar frame
-query_bar_frame = Frame(root, width = "500", height = "500", bg = "dodgerblue3", borderwidth = 3, relief = "groove")
-query_bar_frame.grid(row = 3, column = 0, sticky = "nw")
+class Query(Frame):
 
-# Trip options label
-trip_options_label = Label(root, text = "TRIP OPTIONS:", fg = "black", bg = "dodgerblue3", font = ("verdana", 17))
-trip_options_label.grid(row = 3, column = 0, sticky = "nw", padx = 150, pady = 25)
+    def __init__(self, master = None):
+        Frame.__init__(self, master)
 
-# From query
-from_label = Label(root, text = "FROM: ", fg = "black", bg = "dodgerblue3", font = ("verdana 12 bold"))
-from_label.place(x = 35, y = 630)
+        self.query_widgets()
 
-def query_widgets():
-    # Updating the listbox with all options
-    users_search = StringVar()
-    users_search.trace("w", updateList)
+    def query_widgets(self):
 
-    from_query = Entry(root, textvariable = users_search)
-    from_query.place(x = 100, y = 630)
+        # Updating the listbox with all options
+        self.users_search = StringVar()
+        self.users_search.trace("w", self.updateList)
 
-    from_query.bind("<Key>", lambda : updateList(users_search))
+        # Query bar frame
+        self.query_bar_frame = Frame(root, width="500", height="500", bg="dodgerblue3", borderwidth=3, relief="groove")
+        self.query_bar_frame.grid(row=3, column=0, sticky="nw")
 
-def updateList(key, users_search):
+        # Trip options label
+        self.trip_options_label = Label(root, text="TRIP OPTIONS:", fg="black", bg="dodgerblue3", font=("verdana", 17))
+        self.trip_options_label.grid(row=3, column=0, sticky="nw", padx=150, pady=25)
 
-    from_listbox = Listbox(root)
-    from_listbox.place(x=100, y=650)
+        # From query
+        self.from_label = Label(root, text="FROM: ", fg="black", bg="dodgerblue3", font=("verdana 12 bold"))
+        self.from_label.place(x=35, y=630)
 
-    search_term = users_search.get()
+        self.from_query = Entry(root, textvariable = self.users_search)
+        self.from_query.place(x = 100, y = 632)
 
-    lbox_list = ['Adam', 'Lucy', 'Barry', 'Bob',
-                 'James', 'Frank', 'Susan', 'Amanda', 'Christie']
-    from_listbox.delete(0, END)
+        self.from_query.bind("<Key>", self.updateList)
+        self.from_query.bind("<FocusIn>", self.toggle_visibility)
+        self.from_query.bind("<FocusOut>", self.toggle_visibility)
 
-    for item in lbox_list:
-        if search_term.lower() in item.lower():
-            from_listbox.insert(END, item)
+
+    def updateList(self, *args):
+
+        search_term = self.users_search.get()
+
+        self.from_listbox = Listbox(root)
+        self.from_listbox.place(x=100, y=652)
+        self.from_listbox.pi = self.from_listbox.place_info()
+
+        self.from_listbox.config(highlightbackground="red")
+
+        test_lbox = ['Adam', 'Lucy', 'Barry', 'Bob', 'James', 'Frank', 'Susan', 'Amanda', 'Christie']
+
+        self.from_listbox.delete(0, END)
+
+        for item in test_lbox:
+            if search_term.lower() in item.lower():
+                self.from_listbox.insert(END, item)
+
+    def toggle_visibility(self):
+        if self.from_query.visible:
+            self.from_listbox.place_forget()
+        else:
+            self.from_listbox.place(self.from_listbox.pi)
+
+Query(master = root)
 
 
 # Main window loop
