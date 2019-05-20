@@ -78,22 +78,28 @@ class Query(Frame):
         # Gets users search(live)
         search_term = self.users_search.get()
 
-        # Puts listboxes on screen and makes them disapear if users not using entry
+        # Puts listboxes on screen
         self.from_listbox = Listbox(root, width = "35")
         self.from_listbox.place(x=120, y=577)
         self.listbox_is_showing = True
         self.from_listbox.pi = self.from_listbox.place_info()
         self.from_listbox.config(highlightbackground="red")
+
+        # Toggles listboxes visibility when entry isn't being used
         self.from_query.bind("<FocusOut>", self.toggle_visibility)
         self.from_listbox.bind("<FocusOut>", self.toggle_visibility)
 
-        test_lbox = ['Adam', 'Lucy', 'Barry', 'Bob', 'James', 'Frank', 'Susan', 'Amanda', 'Christie']
+        # Search suggestion navigation
+        self.from_listbox.bind("<Return>", lambda from_listbox: self.selection(self.from_listbox))
+        self.from_listbox.bind("<1>", lambda from_listbox: self.selection(self.from_listbox))
+        
+        search_queries = ['Adam', 'Lucy', 'Barry', 'Bob', 'James', 'Frank', 'Susan', 'Amanda', 'Christie']
 
         # Removes any past data left on from listbox
         self.from_listbox.delete(0, END)
 
         # Dynamically prints out listbox items matching users search
-        for item in test_lbox:
+        for item in search_queries:
             if search_term.lower() in item.lower():
                 self.from_listbox.insert(END, item)
 
@@ -105,6 +111,13 @@ class Query(Frame):
         else:
             self.from_listbox.place(x=120, y=577)
             self.listbox_is_showing = True
+
+    # Deals with the selection of search suggestions
+    def selection(self, listbox):
+        self.index = listbox.curselection()
+        self.text = listbox.get(self.index)
+        self.from_query.delete(0, END)
+        self.from_query.insert(0, self.text)
 
 Query(master = root)
 
