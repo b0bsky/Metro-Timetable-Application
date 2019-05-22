@@ -3,7 +3,7 @@
     Developer: Reuben Maddock
 '''
 
-from tkinter import Tk, Frame, Label, Entry, Listbox, StringVar, END, ttk, ACTIVE, ANCHOR
+from tkinter import Tk, Frame, Label, Entry, Listbox, StringVar, END, ttk
 import re
 
 # Creating main window and setting window options
@@ -97,8 +97,8 @@ class Query(Frame):
                     self.from_listbox_is_showing = True
 
                     # Search suggestion navigation
-                    self.from_listbox.bind("<Return>", lambda from_listbox: self.selection(self.from_listbox))
-                    self.from_listbox.bind("<<ListboxSelect>>", lambda from_listbox: self.selection(self.from_listbox))
+                    self.from_listbox.bind("<Return>", lambda from_listbox: self.selection(self.from_listbox, self.from_query))
+                    self.from_listbox.bind("<<ListboxSelect>>", lambda from_listbox: self.selection(self.from_listbox, self.from_query))
 
                     # Toggles listboxes visibility when entry isn't being used
                     self.from_query.bind("<FocusOut>", self.toggle_visibility)
@@ -129,11 +129,12 @@ class Query(Frame):
             self.from_listbox_is_showing = False
 
     # Deals with the selection of search suggestions
-    def selection(self, listbox):
+    def selection(self, listbox, entry):
         if self.from_listbox_is_showing:
             self.users_search.set(listbox.get(listbox.curselection()))
             listbox.destroy()
             self.from_listbox_is_showing = False
+            entry.icursor(END)
 
 if __name__ == "__main__":
 
