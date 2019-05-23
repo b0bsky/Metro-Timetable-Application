@@ -3,7 +3,7 @@
     Developer: Reuben Maddock
 '''
 
-from tkinter import Tk, Frame, Label, Entry, Listbox, StringVar, END, ttk
+from tkinter import Tk, Frame, Label, Entry, Listbox, StringVar, END, ttk, ACTIVE
 import re
 
 # Creating main window and setting window options
@@ -31,11 +31,35 @@ search_bar_style.configure("TEntry", )
 search_bar_entry = Entry(search_bar_frame, width = "45", font = ("Helvetica 14"))
 search_bar_entry.grid(row = 1, column = 0, sticky = "w")
 
+# Query bar frame
+query_bar_frame = Frame(root, width="500", height="500", bg="dodgerblue3", borderwidth=3, relief="groove")
+query_bar_frame.grid(row=3, column=0, sticky="nw")
+
+# Trip options label
+trip_options_label = Label(root, text="TRIP OPTIONS:", fg="black", bg="dodgerblue3", font=("verdana", 17))
+trip_options_label.grid(row=3, column=0, sticky="nw", padx=150, pady=25)
+
 # ----- RESULTS BAR ----- #
 
 # Results bar frame
 results_bar_frame = Frame(root, width = "500", height = "325", borderwidth = 3, relief = "groove")
 results_bar_frame.grid(row = 2, column = 0, sticky = "nw")
+
+# Listbox visibility variables
+from_listbox_is_showing = False
+to_listbox_is_showing = False
+
+# From query
+from_label = Label(root, text="FROM: ", fg="black", bg="dodgerblue3", font=("verdana 12 bold"))
+from_label.place(x=35, y=555)
+from_query_search = StringVar()
+from_query = Entry(root, width = "35", textvariable = from_query_search)
+
+# To query
+to_label = Label(root, text = "TO: ", fg = "black", bg = "dodgerblue3", font = ("verdana 12 bold"))
+to_label.place(x=55, y=615)
+to_query_search = StringVar()
+to_query = Entry(root, width = "35", textvariable = to_query_search)
 
 # ----- QUERY BAR ------- #
 
@@ -43,98 +67,89 @@ results_bar_frame.grid(row = 2, column = 0, sticky = "nw")
 class Query(Frame):
 
     # Initiation function
-    def __init__(self, autocompleteentry, *args, **kwargs):
+    def __init__(self, autocompleteentry, listbox_x, listbox_y, query, query_x, query_y, query_search, listbox_is_showing, *args, **kwargs):
         Frame.__init__(self)
 
-        self.from_listbox_is_showing = False
+        self.query = query
+        self.listbox_x = listbox_x
+        self.listbox_y = listbox_y
+        self.query_x = query_x
+        self.query_y = query_y
+        self.query_search = query_search
+        self.listbox_is_showing = listbox_is_showing
 
         # Updating the listbox with all options
-        self.users_search = StringVar()
-        self.users_search.trace("w", self.updateList)
+        self.query_search.trace("w", self.updateList)
+        self.query.place(x=self.query_x, y=self.query_y)
 
-        # Query bar frame
-        self.query_bar_frame = Frame(root, width="500", height="500", bg="dodgerblue3", borderwidth=3, relief="groove")
-        self.query_bar_frame.grid(row=3, column=0, sticky="nw")
-
-        # Trip options label
-        self.trip_options_label = Label(root, text="TRIP OPTIONS:", fg="black", bg="dodgerblue3", font=("verdana", 17))
-        self.trip_options_label.grid(row=3, column=0, sticky="nw", padx=150, pady=25)
-
-        # From query
-        self.from_label = Label(root, text="FROM: ", fg="black", bg="dodgerblue3", font=("verdana 12 bold"))
-        self.from_label.place(x=35, y=555)
-        self.from_query = Entry(root, width = "35", textvariable = self.users_search)
-        self.from_query.place(x = 120, y = 557)
-
-        # Dynamically updates the from queries search
-        self.from_query.bind("<FocusIn>", self.updateList)
+        # Dynamically updates queries search
+        self.query.bind("<FocusIn>", self.updateList)
 
         # Custom matches function
-        if 'matchesFunction' in kwargs:
-            self.matchesFunction = kwargs['matchesFunction']
-            del kwargs['matchesFunction']
+        if 'matches_function' in kwargs:
+            self.matchesFunction = kwargs['matches_function']
+            del kwargs['matches_function']
 
     # Dynamically updates the query frames listboxes
     def updateList(self, *args):
 
         # Gets users search when there is text in listbox
-        if self.users_search.get() == '':
-            if self.from_listbox_is_showing:
-                self.from_listbox.destroy()
-                self.from_listbox_is_showing = False
+        if self.query_search.get() == '':
+            if self.listbox_is_showing:
+                self.listbox.destroy()
+                self.listbox_is_showing = False
         else:
-            word_matched = self.search_compare()
+            word_matched = self.search_compare(self.query_search)
 
+            # Dynamic search filtering the from query
             if word_matched:
-                if not self.from_listbox_is_showing:
+                if not self.listbox_is_showing:
 
                     # Puts listboxes on screen
-                    self.from_listbox = Listbox(root, width = "35")
-                    self.from_listbox.place(x=120, y=577)
-                    self.from_listbox_is_showing = True
-                    self.from_listbox.pi = self.from_listbox.place_info()
-                    self.from_listbox.config(highlightbackground="red")
-                    self.from_listbox_is_showing = True
+                    self.listbox = Listbox(root, width = "32")
+                    self.listbox.place(x=self.listbox_x, y=self.listbox_y)
+                    self.listbox_is_showing = True
 
                     # Search suggestion navigation
-                    self.from_listbox.bind("<Return>", lambda from_listbox: self.selection(self.from_listbox, self.from_query))
-                    self.from_listbox.bind("<<ListboxSelect>>", lambda from_listbox: self.selection(self.from_listbox, self.from_query))
+                    self.listbox.bind("<Return>", self.selection)
+                    self.listbox.bind("<<ListboxSelect>>", self.selection)
 
                     # Toggles listboxes visibility when entry isn't being used
-                    self.from_query.bind("<FocusOut>", self.toggle_visibility)
+                    self.query.bind("<FocusOut>", self.toggle_visibility)
 
                 # Removes any past data left on from listbox
-                self.from_listbox.delete(0, END)
+                self.listbox.delete(0, END)
 
                 # Dynamically prints out listbox items matching users search
                 for item in word_matched:
-                    if self.users_search.get().lower() in item.lower():
-                        self.from_listbox.insert(END, item)
+                    if self.query_search.get().lower() in item.lower():
+                        self.listbox.insert(END, item)
             else:
-                if self.from_listbox_is_showing:
-                    self.from_listbox.destroy()
-                    self.from_listbox_is_showing = False
+                if self.listbox_is_showing:
+                    self.listbox.destroy()
+                    self.listbox_is_showing = False
+
 
     # Compares users search to search terms in database
-    def search_compare(self):
+    def search_compare(self, query):
 
         # Compares users search with every item in list
-        return [w for w in search_queries if matches(self.users_search.get(), w)]
+        return [w for w in search_queries if matches(self.query.get(), w)]
 
     # Toggles listboxes visibility on screen
     def toggle_visibility(self, event=None):
 
-        if self.from_listbox_is_showing and self.from_listbox is not self.from_listbox.focus_get():
-            self.from_listbox.destroy()
-            self.from_listbox_is_showing = False
+        if self.listbox_is_showing and self.listbox is not self.listbox.focus_get():
+            self.listbox.destroy()
+            self.listbox_is_showing = False
 
     # Deals with the selection of search suggestions
-    def selection(self, listbox, entry):
-        if self.from_listbox_is_showing:
-            self.users_search.set(listbox.get(listbox.curselection()))
-            listbox.destroy()
-            self.from_listbox_is_showing = False
-            entry.icursor(END)
+    def selection(self, *args):
+        if self.listbox_is_showing:
+            self.query_search.set(self.listbox.get(self.listbox.curselection()))
+            self.listbox.destroy()
+            self.listbox_is_showing = False
+            self.query.icursor(END)
 
 if __name__ == "__main__":
 
@@ -146,8 +161,13 @@ if __name__ == "__main__":
         pattern = re.compile(re.escape(row_value) + '.*', re.IGNORECASE)
         return re.match(pattern, ac_list_entry)
 
+# def __init__(self, autocompleteentry, listbox, listbox_x, listbox_y, query, query_x, query_y, query_search, listbox_is_showing, *args, **kwargs):
+ #self.listbox.place(x=120, y=577)
+# self.query.place(x = 120, y = 557), query.place(x = 120, y = 617)
+# Creating the from and to query instances
+from_query_instance = Query(search_queries, 120, 577, from_query, 120, 557, from_query_search, from_listbox_is_showing, matches_function = matches)
+to_query_instance = Query(search_queries, 120, 633, to_query, 120, 617, to_query_search, to_listbox_is_showing, matches_function = matches)
 
-Query(search_queries, root, matchesFunction = matches)
 
 # Main window loop
 root.mainloop()
