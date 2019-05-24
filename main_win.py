@@ -3,7 +3,7 @@
     Developer: Reuben Maddock
 '''
 
-from tkinter import Tk, Frame, Label, Entry, Listbox, StringVar, END, ttk, ACTIVE
+from tkinter import Tk, Frame, Label, Entry, Listbox, StringVar, END, ttk
 import re
 
 # Creating main window and setting window options
@@ -61,13 +61,14 @@ to_label.place(x=55, y=615)
 to_query_search = StringVar()
 to_query = Entry(root, width = "35", textvariable = to_query_search)
 
+
 # ----- QUERY BAR ------- #
 
 # Query class which holds everything in the query frame
 class Query(Frame):
 
     # Initiation function
-    def __init__(self, autocompleteentry, listbox_x, listbox_y, query, query_x, query_y, query_search, listbox_is_showing, *args, **kwargs):
+    def __init__(self, listbox_x, listbox_y, query, query_x, query_y, query_search, listbox_is_showing, *args, **kwargs):
         Frame.__init__(self)
 
         self.query = query
@@ -151,23 +152,38 @@ class Query(Frame):
             self.listbox_is_showing = False
             self.query.icursor(END)
 
+# Route selection class
+class RouteSelection:
+
+    def __init__(self):
+
+        # Query Options
+        self.route_label = Label(root, text="ROUTE: ", fg="black", bg="dodgerblue3", font=("verdana 12 bold"))
+        self.route_label.place(x = 20, y = 677)
+
+        self.route_selected = StringVar()
+        self.route_selection = ttk.Combobox(root, textvariable = self.route_selected, values = route_queries, width = 32)
+        self.route_selection.place(x = 120, y = 677)
+
+
+
 if __name__ == "__main__":
 
     # Possible search queries
     search_queries = ['Adam', 'Lucy', 'Barry', 'Bob', 'James', 'Frank', 'Susan', 'Amanda', 'Christie']
+    route_queries = ['80', 'Purple Line', 'Orange Line', 'Orbiter', '820', 'Blue Line']
 
     # Uses regular expressions to test for a match
     def matches(row_value, ac_list_entry):
         pattern = re.compile(re.escape(row_value) + '.*', re.IGNORECASE)
         return re.match(pattern, ac_list_entry)
 
-# def __init__(self, autocompleteentry, listbox, listbox_x, listbox_y, query, query_x, query_y, query_search, listbox_is_showing, *args, **kwargs):
- #self.listbox.place(x=120, y=577)
-# self.query.place(x = 120, y = 557), query.place(x = 120, y = 617)
 # Creating the from and to query instances
-from_query_instance = Query(search_queries, 120, 577, from_query, 120, 557, from_query_search, from_listbox_is_showing, matches_function = matches)
-to_query_instance = Query(search_queries, 120, 633, to_query, 120, 617, to_query_search, to_listbox_is_showing, matches_function = matches)
+from_query_instance = Query(120, 577, from_query, 120, 557, from_query_search, from_listbox_is_showing, matches_function = matches)
+to_query_instance = Query(120, 633, to_query, 120, 617, to_query_search, to_listbox_is_showing, matches_function = matches)
 
+# Creating route query instance
+route_query_instance = RouteSelection()
 
 # Main window loop
 root.mainloop()
