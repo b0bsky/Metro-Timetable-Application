@@ -6,6 +6,7 @@
 # imports
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
+import sqlite3
 
 # Main Window Class
 class Window(object):
@@ -59,8 +60,8 @@ class Window(object):
             self.route_search_title.setObjectName("route_search_title")
 
             # Route search text
-            self.label = QtWidgets.QLabel(self.route_search_title)
-            self.label.setGeometry(QtCore.QRect(120, 10, 181, 21))
+            self.route_search_label = QtWidgets.QLabel(self.route_search_title)
+            self.route_search_label.setGeometry(QtCore.QRect(120, 10, 181, 21))
 
             # Route search text, font and display settings
             font = QtGui.QFont()
@@ -68,9 +69,9 @@ class Window(object):
             font.setBold(True)
             font.setItalic(False)
             font.setWeight(75)
-            self.label.setFont(font)
-            self.label.setStyleSheet("color: rgb(255,255,255); font: bold")
-            self.label.setObjectName("label")
+            self.route_search_label.setFont(font)
+            self.route_search_label.setStyleSheet("color: rgb(255,255,255); font: bold")
+            self.route_search_label.setObjectName("label")
 
         # Route query frame
         def route_query(self):
@@ -89,36 +90,52 @@ class Window(object):
             self.route_query_title.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.route_query_title.setFrameShadow(QtWidgets.QFrame.Raised)
             self.route_query_title.setObjectName("route_query_title")
-            self.label_2 = QtWidgets.QLabel(self.route_query_title)
-            self.label_2.setGeometry(QtCore.QRect(110, 10, 191, 21))
+            self.route_query_label = QtWidgets.QLabel(self.route_query_title)
+            self.route_query_label.setGeometry(QtCore.QRect(110, 10, 191, 21))
 
             # Deals with font and labels
             font = QtGui.QFont()
             font.setPointSize(16)
             font.setBold(True)
             font.setWeight(75)
-            self.label_2.setFont(font)
-            self.label_2.setStyleSheet("color: rgb(255,255,255)")
-            self.label_2.setObjectName("label_2")
+            self.route_query_label.setFont(font)
+            self.route_query_label.setStyleSheet("color: rgb(255,255,255)")
+            self.route_query_label.setObjectName("route_query_label")
 
         # Function that draws all the border frames around the map api
         def border_frames(self):
 
-            # Horizontal border
-            self.border_frame_1 = QtWidgets.QFrame(self.centralwidget)
-            self.border_frame_1.setGeometry(QtCore.QRect(410, 150, 61, 881))
-            self.border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
-            self.border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
-            self.border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
-            self.border_frame_1.setObjectName("border_frame_1")
+            # Vertical border 1
+            self.horizontal_border_frame_1 = QtWidgets.QFrame(self.centralwidget)
+            self.horizontal_border_frame_1.setGeometry(QtCore.QRect(410, 150, 51, 881))
+            self.horizontal_border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
+            self.horizontal_border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
+            self.horizontal_border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.horizontal_border_frame_1.setObjectName("horizontal_border_frame_1")
 
-            # Vertical border
-            self.border_frame_2 = QtWidgets.QFrame(self.centralwidget)
-            self.border_frame_2.setGeometry(QtCore.QRect(470, 150, 1451, 51))
-            self.border_frame_2.setStyleSheet("background-color: rgb(0, 0, 0)")
-            self.border_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
-            self.border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
-            self.border_frame_2.setObjectName("border_frame_2")
+            # Horizontal border 1
+            self.vertical_border_frame_1 = QtWidgets.QFrame(self.centralwidget)
+            self.vertical_border_frame_1.setGeometry(QtCore.QRect(460, 150, 1461, 51))
+            self.vertical_border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
+            self.vertical_border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
+            self.vertical_border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.vertical_border_frame_1.setObjectName("vertical_border_frame_1")
+
+            # Vertical border 2
+            self.vertical_border_frame_2 = QtWidgets.QFrame(self.centralwidget)
+            self.vertical_border_frame_2.setGeometry(QtCore.QRect(1870, 200, 51, 781))
+            self.vertical_border_frame_2.setStyleSheet("background-color: rgb(0, 0, 0)")
+            self.vertical_border_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
+            self.vertical_border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.vertical_border_frame_2.setObjectName("vertical_border_frame_2")
+
+            # Horizontal border 2
+            self.horizontal_border_frame_2 = QtWidgets.QFrame(self.centralwidget)
+            self.horizontal_border_frame_2.setGeometry(QtCore.QRect(460, 980, 1461, 51))
+            self.horizontal_border_frame_2.setStyleSheet("background-color: rgb(0, 0, 0)")
+            self.horizontal_border_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
+            self.horizontal_border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.horizontal_border_frame_2.setObjectName("horizontal_border_frame_2")
 
         # Menu bar function
         def menu_bar(self):
@@ -136,6 +153,7 @@ class Window(object):
 
         #---------------------------------------------------------------------------------- #
 
+        # Runs all of the display functions
         title_bar = app_title(self)
         route_search_bar = route_search(self)
         route_query_bar = route_query(self)
@@ -146,8 +164,8 @@ class Window(object):
         def retranslateUi(MainWindow):
             _translate = QtCore.QCoreApplication.translate
             MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-            self.label.setText(_translate("MainWindow", "ROUTE SEARCH"))
-            self.label_2.setText(_translate("MainWindow", "ROUTE OPTIONS"))
+            self.route_search_label.setText(_translate("MainWindow", "ROUTE SEARCH"))
+            self.route_query_label.setText(_translate("MainWindow", "ROUTE OPTIONS"))
 
         retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
