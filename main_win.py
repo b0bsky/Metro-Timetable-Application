@@ -15,7 +15,44 @@ class Window(object):
     def __init__(self):
         super(Window, self).__init__()
 
+        # Runs programs main functions
         self.setup_ui(MainWindow)
+        self.load_data()
+
+    # Connects to database
+    def load_data(self):
+
+        # Opens a connection to the database
+        connection = sqlite3.connect('buses.db')
+
+        # Gets currently selected route in combobox
+        route = self.route_selection_combobox.currentText()
+
+        # Gets id of current route
+        id_result = connection.execute("select id from route where name = ?", [route])
+        id = (id_result.fetchall())[0][0]
+
+        # Deals with time part of database
+        times_result = connection.execute("select stop_time from route_stop where route_id = ?", [id])
+        times = times_result.fetchall()
+
+        # If route has no times, empty table else, print it
+        if times == []:
+            self.route_search_table.setColumnCount(0)
+            self.route_search_table.setRowCount(0)
+        else:
+            # Loops through query results and adds row for every time in the database as well as displays it
+            self.route_search_table.setColumnCount(1)
+            self.route_search_table.setRowCount(1)
+
+            # Loops through times, printing them into the search table
+            for time in times:
+                index = times.index(time)
+                self.route_search_table.insertColumn(index)
+
+                # add more if there is more columns in the database.
+                self.route_search_table.setItem(0, index, QtWidgets.QTableWidgetItem(str(time[0])))
+                self.route_search_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
     # Deals with all the UI and window settings
     def setup_ui(self, MainWindow):
@@ -59,7 +96,7 @@ class Window(object):
             self.route_search_title.setFrameShadow(QtWidgets.QFrame.Raised)
             self.route_search_title.setObjectName("route_search_title")
 
-            # Route search text
+            # Route search text display settings
             self.route_search_label = QtWidgets.QLabel(self.route_search_title)
             self.route_search_label.setGeometry(QtCore.QRect(120, 10, 181, 21))
 
@@ -69,9 +106,72 @@ class Window(object):
             font.setBold(True)
             font.setItalic(False)
             font.setWeight(75)
+
+            # Route search text continued
             self.route_search_label.setFont(font)
             self.route_search_label.setStyleSheet("color: rgb(255,255,255); font: bold")
-            self.route_search_label.setObjectName("label")
+            self.route_search_label.setObjectName("route_search_label")
+
+            # Route selection text display settings
+            self.route_selection_label = QtWidgets.QLabel(self.route_search_frame)
+            self.route_selection_label.setGeometry(QtCore.QRect(20, 90, 71, 21))
+            self.route_selection_label.setStyleSheet("font: 12pt; color: rgb(255,255, 255)")
+            self.route_selection_label.setObjectName("route_selection_label")
+
+            # Route selection combobox display settings
+            self.route_selection_combobox = QtWidgets.QComboBox(self.route_search_frame)
+            self.route_selection_combobox.setGeometry(QtCore.QRect(90, 90, 111, 22))
+            self.route_selection_combobox.setStyleSheet("background-color: rgb(255, 255, 255)")
+            self.route_selection_combobox.setObjectName("route_selection_combobox")
+
+            # Route search table display settings
+            self.route_search_table = QtWidgets.QTableWidget(self.route_search_frame)
+            self.route_search_table.setGeometry(QtCore.QRect(20, 180, 371, 251))
+            self.route_search_table.setStyleSheet("background-color: rgb(255, 255, 255)")
+            self.route_search_table.setObjectName("route_search_table")
+            self.route_search_table.horizontalHeader().setVisible(False)
+            self.route_search_table.verticalHeader().setVisible(False)
+            self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+
+
+            # Route search enter button display settings
+            self.search_button = QtWidgets.QPushButton(self.route_search_frame)
+            self.search_button.setGeometry(QtCore.QRect(160, 140, 75, 23))
+            self.search_button.setStyleSheet("background-color: rgb(255, 108, 17)")
+            self.search_button.setObjectName("search_button")
+
+            # Display table when clicked
+            self.search_button.clicked.connect(self.load_data)
+
+            # Select day label
+            self.day_selection_label = QtWidgets.QLabel(self.route_search_frame)
+            self.day_selection_label.setGeometry(QtCore.QRect(220, 90, 71, 21))
+            self.day_selection_label.setStyleSheet("font: 12pt; color: rgb(255,255, 255)")
+            self.day_selection_label.setObjectName("day_selection_label")
+
+            # Combobox to select what day user wants to travel on
+            self.day_selection_combobox = QtWidgets.QComboBox(self.route_search_frame)
+            self.day_selection_combobox.setGeometry(QtCore.QRect(280, 90, 101, 22))
+            self.day_selection_combobox.setStyleSheet("background-color: rgb(255, 255, 255)")
+            self.day_selection_combobox.setObjectName("day_selection_combobox")
+
+            # Displays route search label
+            self.route_search_label.setFont(font)
+            self.route_search_label.setStyleSheet("color: rgb(255,255,255); font: bold")
+            self.route_search_label.setObjectName("route_search_label")
+
+            # Opens a connection to the database as to load in routes into combobox
+            connection = sqlite3.connect('buses.db')
+
+            # Deals with routes part of database in combobox
+            get_routes_query = "select name from route"
+            routes_result = connection.execute(get_routes_query)
+            routes = routes_result.fetchall()
+
+            # updates combobox with all routes
+            for route in routes:
+                self.route_selection_combobox.addItem(route[0])
+
 
         # Route query frame
         def route_query(self):
@@ -165,6 +265,9 @@ class Window(object):
             _translate = QtCore.QCoreApplication.translate
             MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
             self.route_search_label.setText(_translate("MainWindow", "ROUTE SEARCH"))
+            self.route_selection_label.setText(_translate("MainWindow", "ROUTE:"))
+            self.day_selection_label.setText(_translate("MainWindow", "DAY:"))
+            self.search_button.setText(_translate("MainWindow", "SEARCH"))
             self.route_query_label.setText(_translate("MainWindow", "ROUTE OPTIONS"))
 
         retranslateUi(MainWindow)
