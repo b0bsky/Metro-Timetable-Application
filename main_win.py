@@ -25,15 +25,16 @@ class Window(object):
         # Opens a connection to the database
         connection = sqlite3.connect('buses.db')
 
-        # Gets currently selected route in combobox
-        route = self.route_selection_combobox.currentText()
+        # Gets currently selected route and day in comboboxes
+        current_route = self.route_selection_combobox.currentText()
+        current_days = self.day_selection_combobox.currentText()
 
         # Gets id of current route
-        id_result = connection.execute("select id from route where name = ?", [route])
+        id_result = connection.execute("select id from route where name = ?", [current_route])
         id = (id_result.fetchall())[0][0]
 
         # Deals with time part of database
-        times_result = connection.execute("select stop_time from route_stop where route_id = ?", [id])
+        times_result = connection.execute("select stop_time from route_stop where route_id = ? and stop_day = ?", [id, current_days])
         times = times_result.fetchall()
 
         # If route has no times, empty table else, print it
@@ -163,15 +164,23 @@ class Window(object):
             # Opens a connection to the database as to load in routes into combobox
             connection = sqlite3.connect('buses.db')
 
-            # Deals with routes part of database in combobox
+            # Deals with routes part of database in routes combobox
             get_routes_query = "select name from route"
             routes_result = connection.execute(get_routes_query)
             routes = routes_result.fetchall()
 
-            # updates combobox with all routes
+            # Deals with stop days part of database in days combobox
+            get_day_query = "select days from day"
+            days_result = connection.execute(get_day_query)
+            days = days_result.fetchall()
+
+            # updates routes combobox with all routes
             for route in routes:
                 self.route_selection_combobox.addItem(route[0])
 
+            # updates days combobox with all days
+            for day in days:
+                self.day_selection_combobox.addItem(day[0])
 
         # Route query frame
         def route_query(self):
