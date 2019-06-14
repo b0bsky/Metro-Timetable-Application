@@ -37,24 +37,29 @@ class Window(object):
         times_result = connection.execute("select stop_time from route_stop where route_id = ? and stop_day = ?", [id, current_days])
         times = times_result.fetchall()
 
-        # If route has no times, empty table else, print it
-        if times == []:
-            self.route_search_table.setColumnCount(0)
-            self.route_search_table.setRowCount(0)
-        else:
-            # Loops through query results and adds row for every time in the database as well as displays it
-            self.route_search_table.setColumnCount(1)
-            self.route_search_table.setRowCount(1)
+        stops_result = connection.execute("select name from stop where id = ?", [id])
+        stop = stops_result.fetchall()
 
-            # Loops through times, printing them into the search table
-            for time in times:
-                index = times.index(time)
-                self.route_search_table.insertColumn(index)
+        # Emptys table to remove old data and if route has no times, empty table else, print it
+        self.route_search_table.setColumnCount(0)
+        self.route_search_table.setRowCount(0)
 
-                # add more if there is more columns in the database.
-                self.route_search_table.setItem(0, index, QtWidgets.QTableWidgetItem(str(time[0])))
-                self.route_search_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        # Sets row and column
+        self.route_search_table.setColumnCount(1)
+        self.route_search_table.setRowCount(1)
 
+        print(str(stop))
+
+        # Loops through times, printing them into the search table
+        for time in times:
+            index = times.index(time)
+            self.route_search_table.insertColumn(index)
+
+            # add more if there is more columns in the database.
+            self.route_search_table.setItem(0, index, QtWidgets.QTableWidgetItem(str(time[0])))
+            self.route_search_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+
+        self.route_search_table.setItem(0, 0, QtWidgets.QTableWidgetItem(str(stop[0][0])))
     # Deals with all the UI and window settings
     def setup_ui(self, MainWindow):
 
@@ -291,4 +296,3 @@ if __name__ == "__main__":
     ui.setup_ui(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
