@@ -64,7 +64,7 @@ class Window(object):
 
             # Loops through times, adding each time to table
             for time in self.times:
-                print(time[0])
+                
                 index = self.times.index(time)
 
                 self.route_search_table.setItem(stop, index + 1, QtWidgets.QTableWidgetItem(time[0]))
@@ -81,7 +81,6 @@ class Window(object):
                                               "and route_stop.stop_id = stop.id" )
 
         stops_num = stops_num_result.fetchall()
-        print(stops_num)
 
         # Loops through each stop displaying all times
         for stop in range(len(stops_num)):
