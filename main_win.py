@@ -29,37 +29,64 @@ class Window(object):
         current_route = self.route_selection_combobox.currentText()
         current_days = self.day_selection_combobox.currentText()
 
-        # Gets id of current route
-        id_result = connection.execute("select id from route where name = ?", [current_route])
-        id = (id_result.fetchall())[0][0]
+        # Function to print each row in the table
+        def print_row(self, stop, route):
 
-        # Deals with time part of database
-        times_result = connection.execute("select stop_time from route_stop where route_id = ? and stop_day = ?", [id, current_days])
-        times = times_result.fetchall()
+            # Gets id of current route
+            route_id_result = connection.execute("select id from route where name = ?", [route])
+            route_id = (route_id_result.fetchall())[0][0]
 
-        stops_result = connection.execute("select name from stop where id = ?", [id])
-        stop = stops_result.fetchall()
+            # Gets name of current route
+            self.route_name_result = connection.execute("select name from route where id = ?", [route_id])
+            self.route_name = (self.route_name_result.fetchall())[0][0]
+
+            # Gets stop name of current stop
+            self.stop_name_result = connection.execute("select name from stop where id = ?", [stop + 1])
+            self.stop_name = self.stop_name_result.fetchall()[0][0]
+
+            # Gets id of current stop and puts all stops for a route in a list
+            self.stop_id_result = connection.execute("select id from stop where name = ?", [self.stop_name])
+            self.stop_id = (self.stop_id_result.fetchall())[0][0]
+
+            # Gets all times for each stop and puts it in a list
+            self.times_result = connection.execute("select stop_time from route_stop where route_id = ? and stop_id = ? and stop_day = ?", [route_id, self.stop_id, current_days])
+            self.times = (self.times_result.fetchall())
+
+            # Inserts column for each stop and sets rows
+            self.route_search_table.setColumnCount(len(self.times))
+            self.route_search_table.setRowCount(stop + 1)
+
+            # Set first column in table to name of stop if stop in route
+            self.route_search_table.setItem(stop, 0, QtWidgets.QTableWidgetItem(self.stop_name))
+
+            # Makes table uneditable
+            self.route_search_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+
+            # Loops through times, adding each time to table
+            for time in self.times:
+                print(time[0])
+                index = self.times.index(time)
+
+                self.route_search_table.setItem(stop, index + 1, QtWidgets.QTableWidgetItem(time[0]))
 
         # Emptys table to remove old data and if route has no times, empty table else, print it
         self.route_search_table.setColumnCount(0)
         self.route_search_table.setRowCount(0)
 
-        # Sets row and column
-        self.route_search_table.setColumnCount(1)
-        self.route_search_table.setRowCount(1)
+        # Gets length of number of stops in current route
+        stops_num_result = connection.execute("select distinct stop_id from route_stop "
+                                              "inner join route on route_stop.route_id = route.id "
+                                              "inner join stop on route_stop.stop_id = stop.id "
+                                              "where route_stop.route_id = route.id "
+                                              "and route_stop.stop_id = stop.id" )
 
-        print(str(stop))
+        stops_num = stops_num_result.fetchall()
+        print(stops_num)
 
-        # Loops through times, printing them into the search table
-        for time in times:
-            index = times.index(time)
-            self.route_search_table.insertColumn(index)
+        # Loops through each stop displaying all times
+        for stop in range(len(stops_num)):
+            print_row(self, stop, current_route)
 
-            # add more if there is more columns in the database.
-            self.route_search_table.setItem(0, index, QtWidgets.QTableWidgetItem(str(time[0])))
-            self.route_search_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
-
-        self.route_search_table.setItem(0, 0, QtWidgets.QTableWidgetItem(str(stop[0][0])))
     # Deals with all the UI and window settings
     def setup_ui(self, MainWindow):
 
