@@ -64,7 +64,7 @@ class Window(object):
 
             # Loops through times, adding each time to table
             for time in self.times:
-                
+
                 index = self.times.index(time)
 
                 self.route_search_table.setItem(stop, index + 1, QtWidgets.QTableWidgetItem(time[0]))
@@ -161,10 +161,12 @@ class Window(object):
             self.route_search_table.setGeometry(QtCore.QRect(20, 180, 371, 251))
             self.route_search_table.setStyleSheet("background-color: rgb(255, 255, 255)")
             self.route_search_table.setObjectName("route_search_table")
-            self.route_search_table.horizontalHeader().setVisible(False)
-            self.route_search_table.verticalHeader().setVisible(False)
-            self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-
+            self.vertical_header = self.route_search_table.verticalHeader()
+            self.horizontal_header = self.route_search_table.horizontalHeader()
+            self.vertical_header.setVisible(False)
+            self.horizontal_header.setVisible(False)
+            self.horizontal_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+            self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
 
             # Route search enter button display settings
             self.search_button = QtWidgets.QPushButton(self.route_search_frame)
