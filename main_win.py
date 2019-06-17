@@ -29,6 +29,9 @@ class Window(object):
         current_route = self.route_selection_combobox.currentText()
         current_days = self.day_selection_combobox.currentText()
 
+        # Max number of columns to add
+        self.col_total = 0
+
         # Function to print each row in the table
         def print_row(self, stop, route):
 
@@ -52,26 +55,33 @@ class Window(object):
             self.times_result = connection.execute("select stop_time from route_stop where route_id = ? and stop_id = ? and stop_day = ?", [route_id, self.stop_id, current_days])
             self.times = (self.times_result.fetchall())
 
-            # Inserts column for each stop and sets rows
-            self.route_search_table.setColumnCount(len(self.times))
-            self.route_search_table.setRowCount(stop + 1)
+            if len(self.times) > self.col_total:
+                self.col_total = len(self.times)
 
-            # Set first column in table to name of stop if stop in route
-            self.route_search_table.setItem(stop, 0, QtWidgets.QTableWidgetItem(self.stop_name))
 
-            # Makes table uneditable
-            self.route_search_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+            # If there aren't any stops in this route, then empty table
+            if self.col_total is not 0:
 
-            # Loops through times, adding each time to table
-            for time in self.times:
+                # Inserts column for each stop and sets rows
+                self.route_search_table.setColumnCount(self.col_total + 1)
+                self.route_search_table.setRowCount(stop + 1)
 
-                index = self.times.index(time)
 
-                self.route_search_table.setItem(stop, index + 1, QtWidgets.QTableWidgetItem(time[0]))
+                # Set first column in table to name of stop if stop in route
+                self.route_search_table.setItem(stop, 0, QtWidgets.QTableWidgetItem(self.stop_name))
 
-        # Emptys table to remove old data and if route has no times, empty table else, print it
-        self.route_search_table.setColumnCount(0)
-        self.route_search_table.setRowCount(0)
+                # Makes table uneditable
+                self.route_search_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+
+                # Loops through times, adding each time to table
+                for time in self.times:
+
+                    index = self.times.index(time)
+
+                    self.route_search_table.setItem(stop, index + 1, QtWidgets.QTableWidgetItem(time[0]))
+            else:
+                self.route_search_table.setColumnCount(0)
+                self.route_search_table.setRowCount(0)
 
         # Gets length of number of stops in current route
         stops_num_result = connection.execute("select distinct stop_id from route_stop "
@@ -84,6 +94,7 @@ class Window(object):
 
         # Loops through each stop displaying all times
         for stop in range(len(stops_num)):
+
             print_row(self, stop, current_route)
 
     # Deals with all the UI and window settings
@@ -161,12 +172,21 @@ class Window(object):
             self.route_search_table.setGeometry(QtCore.QRect(20, 180, 371, 251))
             self.route_search_table.setStyleSheet("background-color: rgb(255, 255, 255)")
             self.route_search_table.setObjectName("route_search_table")
-            self.vertical_header = self.route_search_table.verticalHeader()
+            self.route_search_table.setColumnCount(0)
+            self.route_search_table.setRowCount(0)
+
+            # Setting up the vertical and horizontal scroll bar for the route search table
+            self.route_search_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+            self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+            self.route_search_table.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+            self.route_search_table.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+
+            # Stretch horizontal header so that all text is in view and not cut out
             self.horizontal_header = self.route_search_table.horizontalHeader()
+            self.vertical_header = self.route_search_table.verticalHeader()
             self.vertical_header.setVisible(False)
             self.horizontal_header.setVisible(False)
             self.horizontal_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-            self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
 
             # Route search enter button display settings
             self.search_button = QtWidgets.QPushButton(self.route_search_frame)
