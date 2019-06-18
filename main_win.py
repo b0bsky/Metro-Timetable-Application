@@ -125,7 +125,7 @@ class Window(object):
 
             # Route search frame settings
             self.route_search_frame = QtWidgets.QFrame(self.centralwidget)
-            self.route_search_frame.setGeometry(QtCore.QRect(0, 150, 411, 421))
+            self.route_search_frame.setGeometry(QtCore.QRect(0, 150, 431, 451))
             self.route_search_frame.setStyleSheet("background-color: rgb(38, 20, 71)")
             self.route_search_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.route_search_frame.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -172,12 +172,12 @@ class Window(object):
             self.route_search_table.setGeometry(QtCore.QRect(20, 180, 371, 251))
             self.route_search_table.setStyleSheet("background-color: rgb(255, 255, 255)")
             self.route_search_table.setObjectName("route_search_table")
+            self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
             self.route_search_table.setColumnCount(0)
             self.route_search_table.setRowCount(0)
 
             # Setting up the vertical and horizontal scroll bar for the route search table
             self.route_search_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-            self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
             self.route_search_table.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
             self.route_search_table.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 
@@ -239,7 +239,7 @@ class Window(object):
         def route_query(self):
             # Creates and sets settings for the frame of the route queries
             self.route_query_frame = QtWidgets.QFrame(self.centralwidget)
-            self.route_query_frame.setGeometry(QtCore.QRect(0, 560, 411, 471))
+            self.route_query_frame.setGeometry(QtCore.QRect(0, 600, 411, 471))
             self.route_query_frame.setStyleSheet("background-color: rgb(38, 20, 71)")
             self.route_query_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.route_query_frame.setFrameShadow(QtWidgets.QFrame.Raised)
