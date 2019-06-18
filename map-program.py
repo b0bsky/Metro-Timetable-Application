@@ -6,7 +6,9 @@ sys.argv.append("--disable-web-security")
 app = QApplication(sys.argv)
 
 transport = "TRANSIT"
-raw_html = '''
+orgin = input("Please enter latitude and longitude coordinates, separated by a comma: ")
+origin_lat, origin_lng = origin.split(",")
+raw_html = f'''
 <!DOCTYPE html>
 <html>
   <head>
@@ -16,16 +18,16 @@ raw_html = '''
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
-      #map {
+      #map {{
         height: 100%;
-      }
+      }}
       /* Optional: Makes the sample page fill the window. */
-      html, body {
+      html, body {{
         height: 100%;
         margin: 0;
         padding: 0;
-      }
-      #floating-panel {
+      }}
+      #floating-panel {{
         position: absolute;
         top: 10px;
         left: 25%;
@@ -37,41 +39,41 @@ raw_html = '''
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
         padding-left: 10px;
-      }
+      }}
     </style>
   </head>
   <body>
     <div id="map"></div>
     <script>
-      function initMap() {
+      function initMap() {{
         var directionsDisplay = new google.maps.DirectionsRenderer;
         var directionsService = new google.maps.DirectionsService;
-        var map = new google.maps.Map(document.getElementById('map'), {
+        var map = new google.maps.Map(document.getElementById('map'), {{
           zoom: 14,
-          center: {lat: -43.53425805, lng: 172.6370746}
-        });
+          center: {{lat: -43.53425805, lng: 172.6370746}}
+        }});
         directionsDisplay.setMap(map);
 		
         calculateAndDisplayRoute(directionsService, directionsDisplay);
     
-      }
+      }}
 
-      function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-        directionsService.route({
-          origin: {lat: -43.64270682, lng: 172.4676911},  // Lincoln University.
-          destination: {lat: -43.53425805, lng: 172.6370746},  // Bus Interchange.
+      function calculateAndDisplayRoute(directionsService, directionsDisplay) {{
+        directionsService.route({{
+          origin: {{lat: {origin_lat}, lng: {origin_lng}}},  // Lincoln University.
+          destination: {{lat: -43.53425805, lng: 172.6370746}},  // Bus Interchange.
           // Note that Javascript allows us to access the constant
           // using square brackets and a string value as its
           // "property."
-          travelMode: google.maps.TravelMode['TRANSIT']
-        }, function(response, status) {
-          if (status == 'OK') {
+          travelMode: google.maps.TravelMode['{transport}']
+        }}, function(response, status) {{
+          if (status == 'OK') {{
             directionsDisplay.setDirections(response);
-          } else {
+          }} else {{
             window.alert('Directions request failed due to ' + status);
-          }
-        });
-      }
+          }}
+        }});
+      }}
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=REDACTED">
