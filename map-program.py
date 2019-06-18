@@ -6,8 +6,10 @@ sys.argv.append("--disable-web-security")
 app = QApplication(sys.argv)
 
 transport = "TRANSIT"
-orgin = input("Please enter latitude and longitude coordinates, separated by a comma: ")
+origin = input("Please enter latitude and longitude coordinates for your current location, separated by a comma: ")
+destination = input("Please enter latitude and longitude coordinates for where you want to go, separated by a comma: ")
 origin_lat, origin_lng = origin.split(",")
+destination_lat, destination_lng = destination.split(",")
 raw_html = f'''
 <!DOCTYPE html>
 <html>
@@ -53,15 +55,14 @@ raw_html = f'''
           center: {{lat: -43.53425805, lng: 172.6370746}}
         }});
         directionsDisplay.setMap(map);
-		
-        calculateAndDisplayRoute(directionsService, directionsDisplay);
-    
-      }}
 
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
+
+      }}
       function calculateAndDisplayRoute(directionsService, directionsDisplay) {{
         directionsService.route({{
           origin: {{lat: {origin_lat}, lng: {origin_lng}}},  // Lincoln University.
-          destination: {{lat: -43.53425805, lng: 172.6370746}},  // Bus Interchange.
+          destination: {{lat: {destination_lat}, lng: {destination_lng}}},  // Bus Interchange.
           // Note that Javascript allows us to access the constant
           // using square brackets and a string value as its
           // "property."
@@ -82,7 +83,7 @@ raw_html = f'''
 </html>
 '''
 
-view = QWebEngineView()
+view=QWebEngineView()
 view.setHtml(raw_html)
 view.show()
 
