@@ -112,6 +112,7 @@ class Window(object):
 
         # App title function, deals with drawing the app title bar
         def app_title(self):
+
             # All title frame settings, colours, position etc...
             self.title_frame = QtWidgets.QFrame(self.centralwidget)
             self.title_frame.setGeometry(QtCore.QRect(0, 0, 2101, 151))
@@ -119,6 +120,18 @@ class Window(object):
             self.title_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.title_frame.setFrameShadow(QtWidgets.QFrame.Raised)
             self.title_frame.setObjectName("title_frame")
+
+            # All title label settings
+            self.title_label = QtWidgets.QLabel(self.title_frame)
+            self.title_label.setGeometry(QtCore.QRect(650, 60, 331, 31))
+            font = QtGui.QFont()
+            font.setPointSize(24)
+            font.setBold(True)
+            font.setItalic(False)
+            font.setWeight(75)
+            self.title_label.setFont(font)
+            self.title_label.setStyleSheet("color: rgb(255,255,255); font: bold")
+            self.title_label.setObjectName("title_label")
 
         # Route search frame
         def route_search(self):
@@ -387,6 +400,7 @@ class Window(object):
         def retranslateUi(MainWindow):
             _translate = QtCore.QCoreApplication.translate
             MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+            self.title_label.setText(_translate("MainWindow", "RETRO TRANSPORT"))
             self.route_search_label.setText(_translate("MainWindow", "ROUTE SEARCH"))
             self.route_selection_label.setText(_translate("MainWindow", "ROUTE:"))
             self.day_selection_label.setText(_translate("MainWindow", "DAY:"))
