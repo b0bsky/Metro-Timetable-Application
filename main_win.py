@@ -247,11 +247,13 @@ class Window(object):
 
             # Sets settings for the route query title
             self.route_query_title = QtWidgets.QFrame(self.route_query_frame)
-            self.route_query_title.setGeometry(QtCore.QRect(0, 60, 411, 41))
+            self.route_query_title.setGeometry(QtCore.QRect(0, 10, 431, 41))
             self.route_query_title.setStyleSheet("background-color: rgb(45,226, 230)")
             self.route_query_title.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.route_query_title.setFrameShadow(QtWidgets.QFrame.Raised)
             self.route_query_title.setObjectName("route_query_title")
+
+            # Sets settings for the route query tile label
             self.route_query_label = QtWidgets.QLabel(self.route_query_title)
             self.route_query_label.setGeometry(QtCore.QRect(110, 10, 191, 21))
 
@@ -263,6 +265,57 @@ class Window(object):
             self.route_query_label.setFont(font)
             self.route_query_label.setStyleSheet("color: rgb(255,255,255)")
             self.route_query_label.setObjectName("route_query_label")
+
+            # Deals with the from location label part of the route options querys
+            self.from_location_label = QtWidgets.QLabel(self.route_query_frame)
+            self.from_location_label.setGeometry(QtCore.QRect(30, 100, 61, 16))
+            font = QtGui.QFont()
+            font.setPointSize(14)
+            self.from_location_label.setFont(font)
+            self.from_location_label.setStyleSheet("color: rgb(255,255,255)")
+            self.from_location_label.setObjectName("from_location_label")
+
+            # --------------- FROM SEARCH AUTOCOMPLETE ---------------- #
+
+            # Makes the autocompleter for the from search box
+            test_locations = ["Australia", "New zealand", "Cambodia"]
+            self.from_line_completer = QtWidgets.QCompleter(test_locations)
+            self.from_line_completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+
+            # Deals with the from locations search box
+            self.from_line_edit = QtWidgets.QLineEdit(self.route_query_frame)
+            self.from_line_edit.setGeometry(QtCore.QRect(110, 100, 231, 21))
+            self.from_line_edit.setStyleSheet("background-color: rgb(255,255,255)")
+            self.from_line_edit.setObjectName("from_line_edit")
+            self.from_line_edit.setCompleter(self.from_line_completer)
+
+            # Deals with the to location label part of the route options querys
+            self.to_location_label = QtWidgets.QLabel(self.route_query_frame)
+            self.to_location_label.setGeometry(QtCore.QRect(50, 150, 51, 21))
+            font = QtGui.QFont()
+            font.setPointSize(14)
+            self.to_location_label.setFont(font)
+            self.to_location_label.setStyleSheet("color: rgb(255,255,255)")
+            self.to_location_label.setObjectName("to_location_label")
+
+            # Makes the autocompleter for the to search box
+            to_test_locations = ["australia", "new zealand", "cambodia"]
+            self.to_line_completer = QtWidgets.QCompleter(to_test_locations)
+            self.to_line_completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+
+            # Deals with the to locations search box
+            self.to_line_edit = QtWidgets.QLineEdit(self.route_query_frame)
+            self.to_line_edit.setGeometry(QtCore.QRect(110, 150, 231, 21))
+            self.to_line_edit.setStyleSheet("background-color: rgb(255,255,255)")
+            self.to_line_edit.setObjectName("to_line_edit")
+            self.to_line_edit.setCompleter(self.to_line_completer)
+
+            # Calculate route button
+            self.calculate_route_button = QtWidgets.QPushButton(self.route_query_frame)
+            self.calculate_route_button.setGeometry(QtCore.QRect(130, 230, 141, 23))
+            self.calculate_route_button.setStyleSheet("background-color: rgb(255, 108, 17)")
+            self.calculate_route_button.setObjectName("calculate_route_button")
+
 
         # Function that draws all the border frames around the map api
         def border_frames(self):
@@ -331,6 +384,9 @@ class Window(object):
             self.day_selection_label.setText(_translate("MainWindow", "DAY:"))
             self.search_button.setText(_translate("MainWindow", "SEARCH"))
             self.route_query_label.setText(_translate("MainWindow", "ROUTE OPTIONS"))
+            self.from_location_label.setText(_translate("MainWindow", "FROM:"))
+            self.to_location_label.setText(_translate("MainWindow", "TO:"))
+            self.calculate_route_button.setText(_translate("MainWindow", "CALCULATE BEST ROUTE"))
 
         retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -343,4 +399,4 @@ if __name__ == "__main__":
     ui = Window()
     ui.setup_ui(MainWindow)
     MainWindow.show()
-    sys.exit(app.exec_())
+sys.exit(app.exec_())
