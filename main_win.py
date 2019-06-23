@@ -102,7 +102,7 @@ class Window(object):
 
         # Sets up the main windows settings such as title etc...
         MainWindow.setObjectName("RETRO TRANSPORT")
-        MainWindow.showMaximized()
+        MainWindow.setFixedSize(1560, 900)
         MainWindow.setStyleSheet("")
 
         # Sets the window widget as the programs main object
@@ -330,7 +330,7 @@ class Window(object):
 
             # Vertical border 1
             self.horizontal_border_frame_1 = QtWidgets.QFrame(self.centralwidget)
-            self.horizontal_border_frame_1.setGeometry(QtCore.QRect(410, 150, 51, 881))
+            self.horizontal_border_frame_1.setGeometry(QtCore.QRect(410, 150, 51, 751))
             self.horizontal_border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
             self.horizontal_border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.horizontal_border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -338,7 +338,7 @@ class Window(object):
 
             # Horizontal border 1
             self.vertical_border_frame_1 = QtWidgets.QFrame(self.centralwidget)
-            self.vertical_border_frame_1.setGeometry(QtCore.QRect(460, 150, 1461, 51))
+            self.vertical_border_frame_1.setGeometry(QtCore.QRect(460, 150, 1101, 51))
             self.vertical_border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
             self.vertical_border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.vertical_border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -346,7 +346,7 @@ class Window(object):
 
             # Vertical border 2
             self.vertical_border_frame_2 = QtWidgets.QFrame(self.centralwidget)
-            self.vertical_border_frame_2.setGeometry(QtCore.QRect(1870, 200, 51, 781))
+            self.vertical_border_frame_2.setGeometry(QtCore.QRect(1510, 170, 51, 731))
             self.vertical_border_frame_2.setStyleSheet("background-color: rgb(0, 0, 0)")
             self.vertical_border_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.vertical_border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -354,7 +354,7 @@ class Window(object):
 
             # Horizontal border 2
             self.horizontal_border_frame_2 = QtWidgets.QFrame(self.centralwidget)
-            self.horizontal_border_frame_2.setGeometry(QtCore.QRect(460, 980, 1461, 51))
+            self.horizontal_border_frame_2.setGeometry(QtCore.QRect(460, 850, 1051, 51))
             self.horizontal_border_frame_2.setStyleSheet("background-color: rgb(0, 0, 0)")
             self.horizontal_border_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.horizontal_border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
