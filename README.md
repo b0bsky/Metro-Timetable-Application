@@ -1,8 +1,5 @@
 # Metro-Timetable-Application
 
-## Prerequisites
-- 1920p x 1080p resolution monitor
-
 ## What is this project
 Our aim in this project is to create a simple and intuitive UI (user interface) in python, to interact with a database to help users to:
 - Find individual bus timetables
@@ -22,9 +19,4 @@ We have a variety of tools at our disposal to effectively create this applicatio
 - Github ;)
 - StackOverflow ;;;)
 - Metro Website
-We will be using these tools to maximise productivity, as well as splitting up the workload into more managable chunks. We have two people working on this project and our individual projects are as follows:
-
-## Reuben's Side
-TODO
-## Emile's Side
-TODO
+We will be using these tools to maximise productivity, as well as splitting up the workload into more managable chunks. We have two people working on this project and our individual projects can be found under the projects section of github
