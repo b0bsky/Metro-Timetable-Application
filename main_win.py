@@ -277,9 +277,16 @@ class Window(object):
 
             # --------------- FROM SEARCH AUTOCOMPLETE ---------------- #
 
+            # Opens a connection to the stops database
+            location_connection = sqlite3.connect("stops.db")
+            self.get_location_query = location_connection.execute("select name from stops")
+            self.location_results = self.get_location_query.fetchall()
+
+            # Convert all locations to strings
+            self.location_results = [(str(result[0])) for result in self.location_results]
+
             # Makes the autocompleter for the from search box
-            test_locations = ["Australia", "New zealand", "Cambodia"]
-            self.from_line_completer = QtWidgets.QCompleter(test_locations)
+            self.from_line_completer = QtWidgets.QCompleter(self.location_results)
             self.from_line_completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
             # Deals with the from locations search box
@@ -298,9 +305,10 @@ class Window(object):
             self.to_location_label.setStyleSheet("color: rgb(255,255,255)")
             self.to_location_label.setObjectName("to_location_label")
 
+            # --------------- TO SEARCH AUTOCOMPLETE ---------------- #
+
             # Makes the autocompleter for the to search box
-            to_test_locations = ["australia", "new zealand", "cambodia"]
-            self.to_line_completer = QtWidgets.QCompleter(to_test_locations)
+            self.to_line_completer = QtWidgets.QCompleter(self.location_results)
             self.to_line_completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
             # Deals with the to locations search box
