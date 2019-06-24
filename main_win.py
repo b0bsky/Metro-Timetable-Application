@@ -102,7 +102,7 @@ class Window(object):
 
         # Sets up the main windows settings such as title etc...
         MainWindow.setObjectName("RETRO TRANSPORT")
-        MainWindow.setFixedSize(1560, 900)
+        MainWindow.setFixedSize(1400, 810)
         MainWindow.setStyleSheet("")
 
         # Sets the window widget as the programs main object
@@ -115,7 +115,7 @@ class Window(object):
 
             # All title frame settings, colours, position etc...
             self.title_frame = QtWidgets.QFrame(self.centralwidget)
-            self.title_frame.setGeometry(QtCore.QRect(0, 0, 2101, 151))
+            self.title_frame.setGeometry(QtCore.QRect(0, 0, 1400, 111))
             self.title_frame.setStyleSheet("background-color: rgb(146, 0, 117)")
             self.title_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.title_frame.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -123,11 +123,10 @@ class Window(object):
 
             # All title label settings
             self.title_label = QtWidgets.QLabel(self.title_frame)
-            self.title_label.setGeometry(QtCore.QRect(650, 60, 331, 31))
+            self.title_label.setGeometry(QtCore.QRect(540, 40, 331, 31))
             font = QtGui.QFont()
             font.setPointSize(24)
             font.setBold(True)
-            font.setItalic(False)
             font.setWeight(75)
             self.title_label.setFont(font)
             self.title_label.setStyleSheet("color: rgb(255,255,255); font: bold")
@@ -138,7 +137,7 @@ class Window(object):
 
             # Route search frame settings
             self.route_search_frame = QtWidgets.QFrame(self.centralwidget)
-            self.route_search_frame.setGeometry(QtCore.QRect(0, 150, 431, 451))
+            self.route_search_frame.setGeometry(QtCore.QRect(0, 111, 411, 441))
             self.route_search_frame.setStyleSheet("background-color: rgb(38, 20, 71)")
             self.route_search_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.route_search_frame.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -182,7 +181,7 @@ class Window(object):
 
             # Route search table display settings
             self.route_search_table = QtWidgets.QTableWidget(self.route_search_frame)
-            self.route_search_table.setGeometry(QtCore.QRect(20, 180, 371, 251))
+            self.route_search_table.setGeometry(QtCore.QRect(20, 180, 371, 230))
             self.route_search_table.setStyleSheet("background-color: rgb(255, 255, 255)")
             self.route_search_table.setObjectName("route_search_table")
             self.route_search_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
@@ -252,7 +251,7 @@ class Window(object):
         def route_query(self):
             # Creates and sets settings for the frame of the route queries
             self.route_query_frame = QtWidgets.QFrame(self.centralwidget)
-            self.route_query_frame.setGeometry(QtCore.QRect(0, 600, 411, 471))
+            self.route_query_frame.setGeometry(QtCore.QRect(0, 545, 411, 471))
             self.route_query_frame.setStyleSheet("background-color: rgb(38, 20, 71)")
             self.route_query_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.route_query_frame.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -333,7 +332,7 @@ class Window(object):
 
             # Calculate route button
             self.calculate_route_button = QtWidgets.QPushButton(self.route_query_frame)
-            self.calculate_route_button.setGeometry(QtCore.QRect(130, 230, 141, 23))
+            self.calculate_route_button.setGeometry(QtCore.QRect(130, 210, 141, 23))
             self.calculate_route_button.setStyleSheet("background-color: rgb(255, 108, 17)")
             self.calculate_route_button.setObjectName("calculate_route_button")
 
@@ -342,24 +341,24 @@ class Window(object):
         def border_frames(self):
 
             # Vertical border 1
-            self.horizontal_border_frame_1 = QtWidgets.QFrame(self.centralwidget)
-            self.horizontal_border_frame_1.setGeometry(QtCore.QRect(410, 150, 51, 751))
-            self.horizontal_border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
-            self.horizontal_border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
-            self.horizontal_border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
-            self.horizontal_border_frame_1.setObjectName("horizontal_border_frame_1")
-
-            # Horizontal border 1
             self.vertical_border_frame_1 = QtWidgets.QFrame(self.centralwidget)
-            self.vertical_border_frame_1.setGeometry(QtCore.QRect(460, 150, 1101, 51))
+            self.vertical_border_frame_1.setGeometry(QtCore.QRect(410, 110, 51, 701))
             self.vertical_border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
             self.vertical_border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.vertical_border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
             self.vertical_border_frame_1.setObjectName("vertical_border_frame_1")
 
+            # Horizontal border 1
+            self.horizontal_border_frame_1 = QtWidgets.QFrame(self.centralwidget)
+            self.horizontal_border_frame_1.setGeometry(QtCore.QRect(460, 110, 941, 51))
+            self.horizontal_border_frame_1.setStyleSheet("background-color: rgb(0, 0, 0)")
+            self.horizontal_border_frame_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
+            self.horizontal_border_frame_1.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.horizontal_border_frame_1.setObjectName("horizontal_border_frame_1")
+
             # Vertical border 2
             self.vertical_border_frame_2 = QtWidgets.QFrame(self.centralwidget)
-            self.vertical_border_frame_2.setGeometry(QtCore.QRect(1510, 170, 51, 731))
+            self.vertical_border_frame_2.setGeometry(QtCore.QRect(1350, 150, 51, 661))
             self.vertical_border_frame_2.setStyleSheet("background-color: rgb(0, 0, 0)")
             self.vertical_border_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.vertical_border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -367,7 +366,7 @@ class Window(object):
 
             # Horizontal border 2
             self.horizontal_border_frame_2 = QtWidgets.QFrame(self.centralwidget)
-            self.horizontal_border_frame_2.setGeometry(QtCore.QRect(460, 850, 1051, 51))
+            self.horizontal_border_frame_2.setGeometry(QtCore.QRect(410, 760, 941, 51))
             self.horizontal_border_frame_2.setStyleSheet("background-color: rgb(0, 0, 0)")
             self.horizontal_border_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
             self.horizontal_border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -421,4 +420,4 @@ if __name__ == "__main__":
     ui = Window()
     ui.setup_ui(MainWindow)
     MainWindow.show()
-sys.exit(app.exec_())
+    sys.exit(app.exec_())
