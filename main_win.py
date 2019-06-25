@@ -5,6 +5,7 @@
 
 # imports
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 import sys
 import sqlite3
 
@@ -336,6 +337,13 @@ class Window(object):
             self.calculate_route_button.setStyleSheet("background-color: rgb(255, 108, 17)")
             self.calculate_route_button.setObjectName("calculate_route_button")
 
+            # Runs when calculate button is clicked
+            self.calculate_route_button.clicked.connect(calculate_route)
+
+
+        # Calculates route once calculate route button is pressed
+        def calculate_route(self):
+            print("clicked")
 
         # Function that draws all the border frames around the map api
         def border_frames(self):
@@ -372,6 +380,104 @@ class Window(object):
             self.horizontal_border_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
             self.horizontal_border_frame_2.setObjectName("horizontal_border_frame_2")
 
+        # Function that displays the map into the middle of the
+        def map(self):
+            # Creates a vertical box layout for the map to attach too
+            self.vbox_layout = QtWidgets.QVBoxLayout()
+
+            # Map Frame setup
+            self.map_frame = QtWidgets.QFrame(self.centralwidget)
+            self.map_frame.setGeometry(QtCore.QRect(460, 152, 900, 620))
+            self.map_frame.setStyleSheet("background-color: rgb(0, 0, 0)")
+            self.map_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+            self.map_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.map_frame.setObjectName("map_frame")
+
+            # ---------------- JAVASCRIPT CODE CONNECTING TO THE MAP API---------------- #
+
+            transport = "TRANSIT"
+            origin_lat, origin_lng = "-43.64270682", "172.4676911"
+            destination_lat, destination_lng = "-43.51859929", "172.5919908"
+            raw_html = f'''
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+                <meta charset="utf-8">
+                <title>Travel Modes in Directions</title>
+                <style>
+                  /* Always set the map height explicitly to define the size of the div
+                   * element that contains the map. */
+                  #map {{
+                    height: 100%;
+                  }}
+                  /* Optional: Makes the sample page fill the window. */
+                  html, body {{
+                    height: 100%;
+                    margin: 0;
+                    padding: 0;
+                  }}
+                  #floating-panel {{
+                    position: absolute;
+                    top: 10px;
+                    left: 25%;
+                    z-index: 5;
+                    background-color: #fff;
+                    padding: 5px;
+                    border: 1px solid #999;
+                    text-align: center;
+                    font-family: 'Roboto','sans-serif';
+                    line-height: 30px;
+                    padding-left: 10px;
+                  }}
+                </style>
+              </head>
+              <body>
+                <div id="map"></div>
+                <script>
+                  function initMap() {{
+                    var directionsDisplay = new google.maps.DirectionsRenderer;
+                    var directionsService = new google.maps.DirectionsService;
+                    var map = new google.maps.Map(document.getElementById('map'), {{
+                      zoom: 14,
+                      center: {{lat: -43.53425805, lng: 172.6370746}}
+                    }});
+                    directionsDisplay.setMap(map);
+                    calculateAndDisplayRoute(directionsService, directionsDisplay);
+                  }}
+                  function calculateAndDisplayRoute(directionsService, directionsDisplay) {{
+                    directionsService.route({{
+                      origin: {{lat: {origin_lat}, lng: {origin_lng}}},  // Lincoln University.
+                      destination: {{lat: {destination_lat}, lng: {destination_lng}}},  // Bus Interchange.
+                      // Note that Javascript allows us to access the constant
+                      // using square brackets and a string value as its
+                      // "property."
+                      travelMode: google.maps.TravelMode['{transport}']
+                    }}, function(response, status) {{
+                      if (status == 'OK') {{
+                        directionsDisplay.setDirections(response);
+                      }} else {{
+                        window.alert('Directions request failed due to ' + status);
+                      }}
+                    }});
+                  }}
+                </script>
+                <script async defer
+                src="https://maps.googleapis.com/maps/api/js?key=REDACTED">
+                </script>
+              </body>
+            </html>
+            '''
+            # --------------------------- --------------------------- #
+
+            # Creates a QWebengineview widget for the map
+            view = QWebEngineView()
+            view.setHtml(raw_html)
+
+            # Adds the map to the layout and sets it into the frame
+            self.vbox_layout.addWidget(view)
+            self.map_frame.setLayout(self.vbox_layout)
+
         # Menu bar function
         def menu_bar(self):
 
@@ -394,6 +500,7 @@ class Window(object):
         route_query_bar = route_query(self)
         border_frames = border_frames(self)
         menu_frame = menu_bar(self)
+        map_frame = map(self)
 
         # Deals with any text in the programs and deals with multilanguage switching from C++ to Python when coding
         def retranslateUi(MainWindow):
