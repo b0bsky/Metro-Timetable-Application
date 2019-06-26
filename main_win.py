@@ -303,11 +303,11 @@ class Window(object):
             self.from_line_completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
             # Deals with the from locations search box
-            self.from_line_edit = QtWidgets.QLineEdit(self.route_query_frame)
-            self.from_line_edit.setGeometry(QtCore.QRect(110, 100, 231, 21))
-            self.from_line_edit.setStyleSheet("background-color: rgb(255,255,255)")
-            self.from_line_edit.setObjectName("from_line_edit")
-            self.from_line_edit.setCompleter(self.from_line_completer)
+            from_line_edit = QtWidgets.QLineEdit(self.route_query_frame)
+            from_line_edit.setGeometry(QtCore.QRect(110, 100, 231, 21))
+            from_line_edit.setStyleSheet("background-color: rgb(255,255,255)")
+            from_line_edit.setObjectName("from_line_edit")
+            from_line_edit.setCompleter(self.from_line_completer)
 
             # Deals with the to location label part of the route options querys
             self.to_location_label = QtWidgets.QLabel(self.route_query_frame)
@@ -325,11 +325,11 @@ class Window(object):
             self.to_line_completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
             # Deals with the to locations search box
-            self.to_line_edit = QtWidgets.QLineEdit(self.route_query_frame)
-            self.to_line_edit.setGeometry(QtCore.QRect(110, 150, 231, 21))
-            self.to_line_edit.setStyleSheet("background-color: rgb(255,255,255)")
-            self.to_line_edit.setObjectName("to_line_edit")
-            self.to_line_edit.setCompleter(self.to_line_completer)
+            to_line_edit = QtWidgets.QLineEdit(self.route_query_frame)
+            to_line_edit.setGeometry(QtCore.QRect(110, 150, 231, 21))
+            to_line_edit.setStyleSheet("background-color: rgb(255,255,255)")
+            to_line_edit.setObjectName("to_line_edit")
+            to_line_edit.setCompleter(self.to_line_completer)
 
             # Calculate route button
             self.calculate_route_button = QtWidgets.QPushButton(self.route_query_frame)
@@ -337,13 +337,36 @@ class Window(object):
             self.calculate_route_button.setStyleSheet("background-color: rgb(255, 108, 17)")
             self.calculate_route_button.setObjectName("calculate_route_button")
 
+            # Calculates route once calculate route button is pressed
+            def calculate_route(self):
+
+                # Gets current text from the for and to location line edits
+                for_location = from_line_edit.text()
+                to_location = to_line_edit.text()
+
+                # Gets all stops and puts them into a list
+                locations_query = location_connection.execute("select name from stops")
+                old_locations = list(locations_query.fetchall())
+                new_locations = []
+
+                for location in old_locations:
+                    new_locations.append(location[0])
+
+                # If the users input isn't an actual stop, throw tantrum
+                if for_location not in new_locations or to_location not in new_locations:
+
+                    # Tantrum settings
+                    error_message = QtWidgets.QMessageBox()
+                    error_message.setIcon(QtWidgets.QMessageBox.Critical)
+                    error_message.setWindowTitle("SORRY MATE")
+                    error_message.setText("IT APPEARS THAT YOU HAVENT FILLED OUT THE CORRECT LOCATIONS PUNK")
+                    error_message.setInformativeText("Get it right next time tough guy")
+
+                    # Throw tantrum
+                    error_message.exec()
+
             # Runs when calculate button is clicked
             self.calculate_route_button.clicked.connect(calculate_route)
-
-
-        # Calculates route once calculate route button is pressed
-        def calculate_route(self):
-            print("clicked")
 
         # Function that draws all the border frames around the map api
         def border_frames(self):
