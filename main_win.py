@@ -351,7 +351,7 @@ class Window(object):
             def calculate_route():
 
                 # Gets current text from the for and to location line edits
-                for_location = from_line_edit.text()
+                from_location = from_line_edit.text()
                 to_location = to_line_edit.text()
 
                 # Gets all stops and puts them into a list
@@ -359,11 +359,18 @@ class Window(object):
                 old_locations = locations_query.fetchall()
                 new_locations = []
 
+                # Takes the coordinates of the selected origin and destination
+                origin_location_query = location_connection.execute("SELECT latitude, longitude FROM stops WHERE name = ?", [from_location])
+                origin_location = origin_location_query.fetchall()[0]
+
+                destination_location_query = location_connection.execute("SELECT latitude, longitude FROM stops WHERE name = ?", [to_location])
+                destination_location = destination_location_query.fetchall()[0]
+
                 for location in old_locations:
                     new_locations.append(location[0])
 
                 # If the users input isn't an actual stop, throw tantrum
-                if for_location not in new_locations or to_location not in new_locations:
+                if from_location not in new_locations or to_location not in new_locations:
 
                     # Tantrum settings
                     error_message = QtWidgets.QMessageBox()
@@ -374,6 +381,8 @@ class Window(object):
 
                     # Throw tantrum
                     error_message.exec()
+
+
 
             # Runs when calculate button is clicked
             calculate_route_button.clicked.connect(calculate_route)
