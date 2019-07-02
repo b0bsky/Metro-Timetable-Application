@@ -299,8 +299,8 @@ class Window(object):
             # --------------- FROM SEARCH AUTOCOMPLETE ---------------- #
 
             # Opens a connection to the stops database
-            location_connection = sqlite3.connect("stops.db")
-            get_location_query = location_connection.execute("select name from stops")
+            location_connection = sqlite3.connect("stop_details.db")
+            get_location_query = location_connection.execute("select stop from details")
             location_results = get_location_query.fetchall()
 
             # Convert all locations to strings
@@ -355,16 +355,16 @@ class Window(object):
                 to_location = to_line_edit.text()
 
                 # Gets all stops and puts them into a list
-                locations_query = location_connection.execute("select name from stops")
+                locations_query = location_connection.execute("select stop from details")
                 old_locations = locations_query.fetchall()
                 new_locations = []
 
                 # Takes the coordinates of the selected origin and destination
-                origin_location_query = location_connection.execute("SELECT latitude, longitude FROM stops WHERE name = ?", [from_location])
-                origin_location = origin_location_query.fetchall()[0]
+                origin_location_query = location_connection.execute("SELECT latitude, longitude FROM details WHERE stop = ?", [from_location])
+                origin_location = origin_location_query.fetchall()
 
-                destination_location_query = location_connection.execute("SELECT latitude, longitude FROM stops WHERE name = ?", [to_location])
-                destination_location = destination_location_query.fetchall()[0]
+                destination_location_query = location_connection.execute("SELECT latitude, longitude FROM details WHERE stop = ?", [to_location])
+                destination_location = destination_location_query.fetchall()
 
                 for location in old_locations:
                     new_locations.append(location[0])
@@ -552,4 +552,4 @@ if __name__ == "__main__":
     ui = Window()
     ui.setup_ui(MainWindow)
     MainWindow.show()
-    sys.exit(app.exec_())
+sys.exit(app.exec_())
