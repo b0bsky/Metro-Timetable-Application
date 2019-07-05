@@ -1,6 +1,6 @@
 '''
     Main Window Program, deals with the frontend of the program
-    Developer: Reuben Maddock
+    Developer: Reuben Maddock, Emile Reiser
 '''
 
 # imports
@@ -299,8 +299,8 @@ class Window(object):
             # --------------- FROM SEARCH AUTOCOMPLETE ---------------- #
 
             # Opens a connection to the stops database
-            location_connection = sqlite3.connect("stop_details.db")
-            get_location_query = location_connection.execute("select stop from details")
+            location_connection = sqlite3.connect("stops.db")
+            get_location_query = location_connection.execute("select name from stops")
             location_results = get_location_query.fetchall()
 
             # Convert all locations to strings
@@ -355,16 +355,9 @@ class Window(object):
                 to_location = to_line_edit.text()
 
                 # Gets all stops and puts them into a list
-                locations_query = location_connection.execute("select stop from details")
+                locations_query = location_connection.execute("select name from stops")
                 old_locations = locations_query.fetchall()
                 new_locations = []
-
-                # Takes the coordinates of the selected origin and destination
-                origin_location_query = location_connection.execute("SELECT latitude, longitude FROM details WHERE stop = ?", [from_location])
-                origin_location = origin_location_query.fetchall()
-
-                destination_location_query = location_connection.execute("SELECT latitude, longitude FROM details WHERE stop = ?", [to_location])
-                destination_location = destination_location_query.fetchall()
 
                 for location in old_locations:
                     new_locations.append(location[0])
@@ -381,6 +374,18 @@ class Window(object):
 
                     # Throw tantrum
                     error_message.exec()
+
+                else:
+
+                    # Takes the coordinates of the selected origin and destination
+                    origin_location_query = location_connection.execute(
+                        "SELECT latitude, longitude FROM stops WHERE name = ?", [from_location])
+                    route_query.origin_location = origin_location_query.fetchall()[0]
+
+                    destination_location_query = location_connection.execute(
+                        "SELECT latitude, longitude FROM stops WHERE name = ?", [to_location])
+                    route_query.destination_location = destination_location_query.fetchall()[0]
+                    redraw_map()
 
 
 
@@ -423,7 +428,7 @@ class Window(object):
             horizontal_border_frame_2.setObjectName("horizontal_border_frame_2")
 
         # Function that displays the map into the middle of the
-        def map():
+        def init_map():
             # Creates a vertical box layout for the map to attach too
             vbox_layout = QtWidgets.QVBoxLayout()
 
@@ -437,9 +442,55 @@ class Window(object):
 
             # ---------------- JAVASCRIPT CODE CONNECTING TO THE MAP API---------------- #
 
-            transport = "TRANSIT"
-            origin_lat, origin_lng = "-43.64270682", "172.4676911"
-            destination_lat, destination_lng = "-43.51859929", "172.5919908"
+            raw_html = '''
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Simple Map</title>
+                <meta name="viewport" content="initial-scale=1.0">
+                <meta charset="utf-8">
+                <style>
+                  #map {
+                    height: 100%;
+                  }
+                  html, body {
+                    height: 100%;
+                    margin: 0;
+                    padding: 0;
+                  }
+                </style>
+              </head>
+              <body>
+                <div id="map"></div>
+                <script>
+                  var map;
+                  function initMap() {
+                    map = new google.maps.Map(document.getElementById('map'), {
+                      center: {lat: -43.53446, lng: 172.638051},
+                      zoom: 12
+                    });
+                  }
+                </script>
+                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXjscCZ2Q8n7ebXEejFP2lu1wld4bsWyc&callback=initMap"
+                async defer></script>
+              </body>
+            </html>
+            '''
+            # --------------------------- --------------------------- #
+
+            # Creates a QWebEngineView widget for the map
+            init_map.map_view = QWebEngineView()
+            init_map.map_view.setHtml(raw_html)
+
+            # Adds the map to the layout and sets it into the frame
+            vbox_layout.addWidget(init_map.map_view)
+            map_frame.setLayout(vbox_layout)
+
+        # Called when the 'Calculate Route' button is clicked, if the user's input is valid
+        def redraw_map():
+            # Gets the latitude and longitude values of the origin and destination, from the 'route_query' function
+            origin_lat, origin_lng = route_query.origin_location
+            destination_lat, destination_lng = route_query.destination_location
             raw_html = f'''
             <!DOCTYPE html>
             <html>
@@ -448,8 +499,6 @@ class Window(object):
                 <meta charset="utf-8">
                 <title>Travel Modes in Directions</title>
                 <style>
-                  /* Always set the map height explicitly to define the size of the div
-                   * element that contains the map. */
                   #map {{
                     height: 100%;
                   }}
@@ -494,7 +543,7 @@ class Window(object):
                       // Note that Javascript allows us to access the constant
                       // using square brackets and a string value as its
                       // "property."
-                      travelMode: google.maps.TravelMode['{transport}']
+                      travelMode: google.maps.TravelMode['TRANSIT']
                     }}, function(response, status) {{
                       if (status == 'OK') {{
                         directionsDisplay.setDirections(response);
@@ -505,20 +554,13 @@ class Window(object):
                   }}
                 </script>
                 <script async defer
-                src="https://maps.googleapis.com/maps/api/js?key=REDACTED">
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXjscCZ2Q8n7ebXEejFP2lu1wld4bsWyc&callback=initMap">
                 </script>
               </body>
             </html>
             '''
-            # --------------------------- --------------------------- #
 
-            # Creates a QWebengineview widget for the map
-            map_view = QWebEngineView()
-            map_view.setHtml(raw_html)
-
-            # Adds the map to the layout and sets it into the frame
-            vbox_layout.addWidget(map_view)
-            map_frame.setLayout(vbox_layout)
+            init_map.map_view.setHtml(raw_html)
 
         # Menu bar function
         def menu_bar():
@@ -542,7 +584,7 @@ class Window(object):
         route_query_bar = route_query()
         border_frames = border_frames()
         menu_frame = menu_bar()
-        map_frame = map()
+        map_frame = init_map()
 
 # Runs at the beginning of the program, creating the window and doing any preprogram initializations
 if __name__ == "__main__":
@@ -552,4 +594,4 @@ if __name__ == "__main__":
     ui = Window()
     ui.setup_ui(MainWindow)
     MainWindow.show()
-sys.exit(app.exec_())
+    sys.exit(app.exec_())
