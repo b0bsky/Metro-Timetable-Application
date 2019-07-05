@@ -1,6 +1,6 @@
 '''
     Main Window Program, deals with the frontend of the program
-    Developer: Reuben Maddock, Emile Reiser
+    Developer: Reuben Maddock
 '''
 
 # imports
@@ -299,8 +299,8 @@ class Window(object):
             # --------------- FROM SEARCH AUTOCOMPLETE ---------------- #
 
             # Opens a connection to the stops database
-            location_connection = sqlite3.connect("stops.db")
-            get_location_query = location_connection.execute("select name from stops")
+            location_connection = sqlite3.connect("stop_details.db")
+            get_location_query = location_connection.execute("select stop from details")
             location_results = get_location_query.fetchall()
 
             # Convert all locations to strings
@@ -355,7 +355,7 @@ class Window(object):
                 to_location = to_line_edit.text()
 
                 # Gets all stops and puts them into a list
-                locations_query = location_connection.execute("select name from stops")
+                locations_query = location_connection.execute("select stop from details")
                 old_locations = locations_query.fetchall()
                 new_locations = []
 
@@ -374,20 +374,17 @@ class Window(object):
 
                     # Throw tantrum
                     error_message.exec()
-
                 else:
 
                     # Takes the coordinates of the selected origin and destination
                     origin_location_query = location_connection.execute(
-                        "SELECT latitude, longitude FROM stops WHERE name = ?", [from_location])
+                        "SELECT latitude, longitude FROM details WHERE stop = ?", [from_location])
                     route_query.origin_location = origin_location_query.fetchall()[0]
 
                     destination_location_query = location_connection.execute(
-                        "SELECT latitude, longitude FROM stops WHERE name = ?", [to_location])
+                        "SELECT latitude, longitude FROM details WHERE stop = ?", [to_location])
                     route_query.destination_location = destination_location_query.fetchall()[0]
                     redraw_map()
-
-
 
             # Runs when calculate button is clicked
             calculate_route_button.clicked.connect(calculate_route)
@@ -431,7 +428,6 @@ class Window(object):
         def init_map():
             # Creates a vertical box layout for the map to attach too
             vbox_layout = QtWidgets.QVBoxLayout()
-
             # Map Frame setup
             map_frame = QtWidgets.QFrame(self.centralwidget)
             map_frame.setGeometry(QtCore.QRect(460, 152, 900, 620))
@@ -439,127 +435,121 @@ class Window(object):
             map_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
             map_frame.setFrameShadow(QtWidgets.QFrame.Raised)
             map_frame.setObjectName("map_frame")
-
             # ---------------- JAVASCRIPT CODE CONNECTING TO THE MAP API---------------- #
-
             raw_html = '''
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <title>Simple Map</title>
-                <meta name="viewport" content="initial-scale=1.0">
-                <meta charset="utf-8">
-                <style>
-                  #map {
-                    height: 100%;
-                  }
-                  html, body {
-                    height: 100%;
-                    margin: 0;
-                    padding: 0;
-                  }
-                </style>
-              </head>
-              <body>
-                <div id="map"></div>
-                <script>
-                  var map;
-                  function initMap() {
-                    map = new google.maps.Map(document.getElementById('map'), {
-                      center: {lat: -43.53446, lng: 172.638051},
-                      zoom: 12
-                    });
-                  }
-                </script>
-                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXjscCZ2Q8n7ebXEejFP2lu1wld4bsWyc&callback=initMap"
-                async defer></script>
-              </body>
-            </html>
-            '''
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <title>Simple Map</title>
+                    <meta name="viewport" content="initial-scale=1.0">
+                    <meta charset="utf-8">
+                    <style>
+                      #map {
+                        height: 100%;
+                      }
+                      html, body {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    <div id="map"></div>
+                    <script>
+                      var map;
+                      function initMap() {
+                        map = new google.maps.Map(document.getElementById('map'), {
+                          center: {lat: -43.53446, lng: 172.638051},
+                          zoom: 12
+                        });
+                      }
+                    </script>
+                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDogsmVgMFo8jPbzuwQMg68zsb4InensdY&callback=initMap"
+                    async defer></script>
+                  </body>
+                </html>
+                '''
             # --------------------------- --------------------------- #
-
             # Creates a QWebEngineView widget for the map
             init_map.map_view = QWebEngineView()
             init_map.map_view.setHtml(raw_html)
-
             # Adds the map to the layout and sets it into the frame
             vbox_layout.addWidget(init_map.map_view)
             map_frame.setLayout(vbox_layout)
-
         # Called when the 'Calculate Route' button is clicked, if the user's input is valid
         def redraw_map():
             # Gets the latitude and longitude values of the origin and destination, from the 'route_query' function
-            origin_lat, origin_lng = route_query.origin_location
-            destination_lat, destination_lng = route_query.destination_location
+            origin_lng, origin_lat = route_query.origin_location
+            destination_lng, destination_lat = route_query.destination_location
             raw_html = f'''
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-                <meta charset="utf-8">
-                <title>Travel Modes in Directions</title>
-                <style>
-                  #map {{
-                    height: 100%;
-                  }}
-                  /* Optional: Makes the sample page fill the window. */
-                  html, body {{
-                    height: 100%;
-                    margin: 0;
-                    padding: 0;
-                  }}
-                  #floating-panel {{
-                    position: absolute;
-                    top: 10px;
-                    left: 25%;
-                    z-index: 5;
-                    background-color: #fff;
-                    padding: 5px;
-                    border: 1px solid #999;
-                    text-align: center;
-                    font-family: 'Roboto','sans-serif';
-                    line-height: 30px;
-                    padding-left: 10px;
-                  }}
-                </style>
-              </head>
-              <body>
-                <div id="map"></div>
-                <script>
-                  function initMap() {{
-                    var directionsDisplay = new google.maps.DirectionsRenderer;
-                    var directionsService = new google.maps.DirectionsService;
-                    var map = new google.maps.Map(document.getElementById('map'), {{
-                      zoom: 14,
-                      center: {{lat: -43.53425805, lng: 172.6370746}}
-                    }});
-                    directionsDisplay.setMap(map);
-                    calculateAndDisplayRoute(directionsService, directionsDisplay);
-                  }}
-                  function calculateAndDisplayRoute(directionsService, directionsDisplay) {{
-                    directionsService.route({{
-                      origin: {{lat: {origin_lat}, lng: {origin_lng}}},  // Lincoln University.
-                      destination: {{lat: {destination_lat}, lng: {destination_lng}}},  // Bus Interchange.
-                      // Note that Javascript allows us to access the constant
-                      // using square brackets and a string value as its
-                      // "property."
-                      travelMode: google.maps.TravelMode['TRANSIT']
-                    }}, function(response, status) {{
-                      if (status == 'OK') {{
-                        directionsDisplay.setDirections(response);
-                      }} else {{
-                        window.alert('Directions request failed due to ' + status);
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+                    <meta charset="utf-8">
+                    <title>Travel Modes in Directions</title>
+                    <style>
+                      #map {{
+                        height: 100%;
                       }}
-                    }});
-                  }}
-                </script>
-                <script async defer
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXjscCZ2Q8n7ebXEejFP2lu1wld4bsWyc&callback=initMap">
-                </script>
-              </body>
-            </html>
-            '''
-
+                      /* Optional: Makes the sample page fill the window. */
+                      html, body {{
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                      }}
+                      #floating-panel {{
+                        position: absolute;
+                        top: 10px;
+                        left: 25%;
+                        z-index: 5;
+                        background-color: #fff;
+                        padding: 5px;
+                        border: 1px solid #999;
+                        text-align: center;
+                        font-family: 'Roboto','sans-serif';
+                        line-height: 30px;
+                        padding-left: 10px;
+                      }}
+                    </style>
+                  </head>
+                  <body>
+                    <div id="map"></div>
+                    <script>
+                      function initMap() {{
+                        var directionsDisplay = new google.maps.DirectionsRenderer;
+                        var directionsService = new google.maps.DirectionsService;
+                        var map = new google.maps.Map(document.getElementById('map'), {{
+                          zoom: 14,
+                          center: {{lat: -43.53425805, lng: 172.6370746}}
+                        }});
+                        directionsDisplay.setMap(map);
+                        calculateAndDisplayRoute(directionsService, directionsDisplay);
+                      }}
+                      function calculateAndDisplayRoute(directionsService, directionsDisplay) {{
+                        directionsService.route({{
+                          origin: {{lat: {origin_lat}, lng: {origin_lng}}},  // Lincoln University.
+                          destination: {{lat: {destination_lat}, lng: {destination_lng}}},  // Bus Interchange.
+                          // Note that Javascript allows us to access the constant
+                          // using square brackets and a string value as its
+                          // "property."
+                          travelMode: google.maps.TravelMode['TRANSIT']
+                        }}, function(response, status) {{
+                          if (status == 'OK') {{
+                            directionsDisplay.setDirections(response);
+                          }} else {{
+                            window.alert('Directions request failed due to ' + status);
+                          }}
+                        }});
+                      }}
+                    </script>
+                    <script async defer
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDogsmVgMFo8jPbzuwQMg68zsb4InensdY&callback=initMap">
+                    </script>
+                  </body>
+                </html>
+                '''
             init_map.map_view.setHtml(raw_html)
 
         # Menu bar function
